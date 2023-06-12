@@ -18,7 +18,7 @@ async function createUser(req, res, next) {
 
     const user = await User.create({ ...query, password: hashPassword });
 
-    res.status(HTTP_STATUS_CREATED).send(user);
+    res.status(HTTP_STATUS_CREATED).send({ ...user.toJSON(), password: undefined });
   } catch (err) {
     if (err.code === 11000) {
       next(
@@ -47,7 +47,7 @@ async function loginUser(req, res, next) {
 
     res.cookie('jwt', token, { httpOnly: true });
 
-    res.send(user);
+    res.send({ ...user.toJSON(), password: undefined });
   } catch (err) {
     next(err);
   }

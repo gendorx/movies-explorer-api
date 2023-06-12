@@ -30,7 +30,7 @@ app.use(cookieParser());
 app.use(router);
 
 app.use(errorLogger);
-app.use(errorHandler);
 app.use(celebrateErrors());
+app.use(errorHandler);
 
 app.listen(port, host);

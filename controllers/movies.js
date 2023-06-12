@@ -22,7 +22,7 @@ async function createMovie(req, res, next) {
   const userId = req.user.id;
 
   try {
-    const movie = (await Movie.create({ ...req.body, owner: userId })).populate(
+    const movie = await (await Movie.create({ ...req.body, owner: userId })).populate(
       'owner',
     );
 
@@ -45,7 +45,7 @@ async function deleteMovie(req, res, next) {
 
     if (!movie) throw new NotFound('фильм не найден');
     if (!movie.owner._id.equals(userId)) {
-      throw new ForbiddenError('невозможно удалить чужую карточку');
+      throw new ForbiddenError('невозможно удалить чужой фильм');
     }
 
     await movie.deleteOne();
