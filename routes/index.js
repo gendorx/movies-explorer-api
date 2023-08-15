@@ -11,9 +11,10 @@ const authHandler = require('../middlewares/authHandler');
 const router = express.Router();
 
 router.use(authRouter);
+router.use(authHandler);
 
-router.use('/users', authHandler, usersRouter);
-router.use('/movies', authHandler, movieRouter);
+router.use('/users', usersRouter);
+router.use('/movies', movieRouter);
 
 router.all('*', (_req, _res, next) => {
   next(new NotFound('неверный адрес запроса'));

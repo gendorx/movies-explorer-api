@@ -4,6 +4,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const { errors: celebrateErrors } = require('celebrate');
+const cors = require('cors');
 const mongoose = require('mongoose');
 
 const { host, port, mongoUrl } = require('./configs');
@@ -21,6 +22,7 @@ mongoose.connect(mongoUrl, {
 
 // Middlewares
 app.use(requestLogger);
+app.use(cors());
 app.use(helmet());
 app.use(limitter);
 app.use(express.json());

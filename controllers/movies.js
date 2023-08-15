@@ -1,16 +1,18 @@
 const {
   constants: { HTTP_STATUS_CREATED },
-} = require('http2');
+} = require("http2");
 const {
   Error: { ValidationError, CastError },
-} = require('mongoose');
+} = require("mongoose");
 
-const Movie = require('../models/movie');
-const { NotFound, BadRequest, ForbiddenError } = require('../configs/errors');
+const Movie = require("../models/movie");
+const { NotFound, BadRequest, ForbiddenError } = require("../configs/errors");
 
-async function getMovies(_req, res, next) {
+async function getMovies(req, res, next) {
+  const userId = req.user.id;
+
   try {
-    const movies = await Movie.find({}).populate('owner');
+    const movies = await Movie.find({ owner: userId }).populate("owner");
 
     res.status(HTTP_STATUS_CREATED).send(movies);
   } catch (err) {
@@ -22,14 +24,14 @@ async function createMovie(req, res, next) {
   const userId = req.user.id;
 
   try {
-    const movie = await (await Movie.create({ ...req.body, owner: userId })).populate(
-      'owner',
-    );
+    const movie = await (
+      await Movie.create({ ...req.body, owner: userId })
+    ).populate("owner");
 
     res.send(movie);
   } catch (err) {
     if (err instanceof ValidationError) {
-      next(new BadRequest('переданы некорректные данные'));
+      next(new BadRequest("переданы некорректные данные"));
     } else {
       next(err);
     }
@@ -41,11 +43,11 @@ async function deleteMovie(req, res, next) {
   const userId = req.user.id;
 
   try {
-    const movie = await Movie.findById(movieId).populate('owner');
+    const movie = await Movie.findById(movieId).populate("owner");
 
-    if (!movie) throw new NotFound('фильм не найден');
+    if (!movie) throw new NotFound("фильм не найден");
     if (!movie.owner._id.equals(userId)) {
-      throw new ForbiddenError('невозможно удалить чужой фильм');
+      throw new ForbiddenError("невозможно удалить чужой фильм");
     }
 
     await movie.deleteOne();
@@ -53,7 +55,7 @@ async function deleteMovie(req, res, next) {
     res.send(movie);
   } catch (err) {
     if (err instanceof CastError) {
-      next(new BadRequest('переданы некорректные данные'));
+      next(new BadRequest("переданы некорректные данные"));
     } else {
       next(err);
     }

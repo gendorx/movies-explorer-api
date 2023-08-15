@@ -1,7 +1,14 @@
 const { Joi, celebrate } = require('celebrate');
+const validator = require('validator');
 
 const commonFields = {
-  email: Joi.string().required().email(),
+  email: Joi.string().custom((value) => {
+    const isEmail = validator.isEmail(value);
+
+    if(!isEmail) throw new Error('email is invalid');
+
+    return value;
+  }),
   name: Joi.string().required().min(2).max(30),
   password: Joi.string().required(),
 };

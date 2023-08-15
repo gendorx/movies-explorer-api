@@ -6,15 +6,17 @@ const { jwtSecret } = require('../configs');
 const requiredAuthMessage = 'Требуется авторизация';
 
 function authHandler(req, _res, next) {
-  const { jwt: token } = req.cookies;
+  let authorization = req.get('authorization');
 
-  if (!token) {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     next(new AuthError(requiredAuthMessage));
     return;
   }
 
+  authorization = authorization.replace('Bearer ', '');
+
   try {
-    req.user = jwt.verify(token, jwtSecret);
+    req.user = jwt.verify(authorization, jwtSecret);
     next();
   } catch (err) {
     next(new AuthError(requiredAuthMessage));
